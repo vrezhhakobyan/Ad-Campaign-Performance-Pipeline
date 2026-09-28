@@ -1,0 +1,22 @@
+# One-container Airflow (runs "airflow standalone") for easy local use.
+services:
+  airflow:
+    build: ./docker
+    ports:
+      - "8080:8080"
+    environment:
+      PIPELINE_MODE: ${PIPELINE_MODE:-local}
+      S3_BUCKET: ${S3_BUCKET:-}
+      AWS_REGION: ${AWS_REGION:-eu-central-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/project/dags
+      PYTHONPATH: /opt/airflow/project
+    volumes:
+      - ./:/opt/airflow/project
+      - ivy-cache:/home/airflow/.ivy2   # keeps downloaded Spark/Iceberg jars
+    command: standalone
+
+volumes:
+  ivy-cache:
